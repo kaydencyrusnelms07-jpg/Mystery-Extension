@@ -1,4 +1,8 @@
 class MysteryBox {
+  constructor() {
+    this.lastNumber = 0;
+  }
+
   getInfo() {
     return {
       id: "mysterybox",
@@ -37,18 +41,25 @@ class MysteryBox {
   }
 
   activate() {
-    this._last = Math.floor(Math.random() * 9999);
-    this._spin = !this._spin;
+    this.lastNumber = Math.floor(Math.random() * 10000);
   }
 
   randomEffect() {
-    const stage = Scratch.vm.runtime.getTargetForStage();
-    stage.setTempo(20 + Math.random() * 200);
-    Scratch.vm.runtime.emit("RUNTIME_DISPOSED");
+    const runtime = Scratch.vm.runtime;
+    const stage = runtime.getTargetForStage();
+
+    if (!stage) return;
+
+    // Random visual effect
+    const effects = ["ghost", "color", "brightness", "fisheye", "whirl"];
+    const effect = effects[Math.floor(Math.random() * effects.length)];
+
+    stage.effects[effect] = Math.floor(Math.random() * 100);
+    stage.emit("EVENT_TARGET_VISUAL_CHANGE");
   }
 
   secretNumber() {
-    return this._last || 0;
+    return this.lastNumber;
   }
 
   chance(args) {
