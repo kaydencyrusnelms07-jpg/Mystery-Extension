@@ -1,6 +1,14 @@
 class MysteryBox {
   constructor() {
     this.lastNumber = 0;
+    this.unlocked = false;
+    this.seed = Date.now();
+  }
+
+  random() {
+    // Seeded random (LCG)
+    this.seed = (this.seed * 1664525 + 1013904223) % 4294967296;
+    return this.seed / 4294967296;
   }
 
   getInfo() {
@@ -18,7 +26,7 @@ class MysteryBox {
         {
           opcode: "randomEffect",
           blockType: Scratch.BlockType.COMMAND,
-          text: "random effect"
+          text: "random glitch effect"
         },
         {
           opcode: "secretNumber",
@@ -32,29 +40,56 @@ class MysteryBox {
           arguments: {
             n: {
               type: Scratch.ArgumentType.NUMBER,
-              defaultValue: 50
+              defaultValue: 25
             }
           }
+        },
+        {
+          opcode: "cameraShake",
+          blockType: Scratch.BlockType.COMMAND,
+          text: "camera shake %n",
+          arguments: {
+            n: {
+              type: Scratch.ArgumentType.NUMBER,
+              defaultValue: 10
+            }
+          }
+        },
+        {
+          opcode: "cameraZoom",
+          blockType: Scratch.BlockType.COMMAND,
+          text: "camera zoom %n %",
+          arguments: {
+            n: {
+              type: Scratch.ArgumentType.NUMBER,
+              defaultValue: 120
+            }
+          }
+        },
+        {
+          opcode: "devSecret",
+          blockType: Scratch.BlockType.COMMAND,
+          text: "⚠ dev only",
+          hideFromPalette: true
         }
       ]
     };
   }
 
   activate() {
-    this.lastNumber = Math.floor(Math.random() * 10000);
+    this.lastNumber = Math.floor(this.random() * 10000);
+    this.unlocked = true;
   }
 
   randomEffect() {
-    const runtime = Scratch.vm.runtime;
-    const stage = runtime.getTargetForStage();
+    if (!this.unlocked) return;
 
+    const stage = Scratch.vm.runtime.getTargetForStage();
     if (!stage) return;
 
-    // Random visual effect
-    const effects = ["ghost", "color", "brightness", "fisheye", "whirl"];
-    const effect = effects[Math.floor(Math.random() * effects.length)];
-
-    stage.effects[effect] = Math.floor(Math.random() * 100);
+    const effects = ["color", "ghost", "brightness", "fisheye", "whirl"];
+    const effect = effects[Math.floor(this.random() * effects.length)];
+    stage.effects[effect] = Math.floor(this.random() * 100);
     stage.emit("EVENT_TARGET_VISUAL_CHANGE");
   }
 
@@ -63,7 +98,38 @@ class MysteryBox {
   }
 
   chance(args) {
-    return Math.random() * 100 < args.n;
+    return this.random() * 100 < args.n;
+  }
+
+  cameraShake(args) {
+    if (!this.unlocked) return;
+
+    const stage = Scratch.vm.runtime.getTargetForStage();
+    if (!stage) return;
+
+    stage.x += (this.random() - 0.5) * args.n;
+    stage.y += (this.random() - 0.5) * args.n;
+  }
+
+  cameraZoom(args) {
+    if (!this.unlocked) return;
+
+    const stage = Scratch.vm.runtime.getTargetFors
+tage();
+    if (!stage) return;
+
+    stage.setSize(args.n);
+  }
+
+  devSecret() {
+    // Hidden dev power
+    const stage = Scratch.vm.runtime.getTargetForStage();
+    if (!stage) return;
+
+    stage.effects.color = 200;
+    stage.effects.whirl = 100;
+    stage.effects.fisheye = 100;
+    stage.emit("EVENT_TARGET_VISUAL_CHANGE");
   }
 }
 
