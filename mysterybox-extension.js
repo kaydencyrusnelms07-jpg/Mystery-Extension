@@ -70,7 +70,7 @@ class MysteryBox {
           opcode: "devSecret",
           blockType: Scratch.BlockType.COMMAND,
           text: "⚠ dev only",
-          hideFromPalette: true
+          hideFromPalette: false
         }
       ]
     };
