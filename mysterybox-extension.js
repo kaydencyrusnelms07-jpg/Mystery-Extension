@@ -6,7 +6,6 @@ class MysteryBox {
   }
 
   random() {
-    // Seeded random (LCG)
     this.seed = (this.seed * 1664525 + 1013904223) % 4294967296;
     return this.seed / 4294967296;
   }
@@ -69,8 +68,7 @@ class MysteryBox {
         {
           opcode: "devSecret",
           blockType: Scratch.BlockType.COMMAND,
-          text: "⚠ dev only",
-          hideFromPalette: false
+          text: "DEV: reality break"
         }
       ]
     };
@@ -114,15 +112,13 @@ class MysteryBox {
   cameraZoom(args) {
     if (!this.unlocked) return;
 
-    const stage = Scratch.vm.runtime.getTargetFors
-tage();
+    const stage = Scratch.vm.runtime.getTargetForStage();
     if (!stage) return;
 
     stage.setSize(args.n);
   }
 
   devSecret() {
-    // Hidden dev power
     const stage = Scratch.vm.runtime.getTargetForStage();
     if (!stage) return;
 
@@ -134,3 +130,4 @@ tage();
 }
 
 Scratch.extensions.register(new MysteryBox());
+?version=2
